@@ -1,4 +1,4 @@
-const configURL = "http://localhost/nectflix/api/";
+const configURL = "http://10.128.0.11/";
 const api_key = "314876e822f63937379d8c1e437ceea3";
 const imageBaseURL = "https://image.tmdb.org/t/p/";
 

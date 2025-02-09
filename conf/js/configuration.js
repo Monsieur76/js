@@ -1,4 +1,4 @@
-const configURL = "http://localhost/nectflix/api/";
+const configURL = "http://10.128.0.11/";
 
 
 /*async function getVideoPost() {
