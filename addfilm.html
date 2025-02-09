@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary meta tags -->
+    <meta
+      name="description"
+      content="Tvflix is a popular movie app made by Monsieur."
+    />
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml" />
+
+    <!-- google font link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- custom css link -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <!-- custom js link -->
+    <script src="./assets/js/global.js" defer></script>
+    <script src="./assets/js/add_film.js"></script>
+  </head>
+
+  <body>
+    <!-- #HEADER -->
+    <header class="header">
+      <a href="./index.html" class="logo">
+        <img
+          src="./assets/images/logo.svg"
+          width="140"
+          height="32"
+          alt="Nectflix home"
+        />
+      </a>
+      <a id="buttonadd" href="./addfilm.html" class="btn" onclick="getMovieDetail(${id})">
+        <img src="./assets/images/film-clapper-ouvert.png" width="24" height="24" aria-hidden="true" alt="play circle">
+        <span class="span">Ajouter un film</span>
+      </a>
+      <div class="search-box" search-box>
+        <div class="search-wrapper" search-wrapper>
+          <input
+            type="text"
+            name="search"
+            aria-label="search movies"
+            placeholder="Search any movies..."
+            autocomplete="off"
+            class="search-field"
+            search-field
+          />
+          <img
+            src="./assets/images/search.png"
+            width="24"
+            height="24"
+            alt="search"
+            class="leading-icon"
+          />
+        </div>
+
+        <button class="search-btn" search-toggler>
+          <img
+            src="./assets/images/close.png"
+            width="24"
+            height="24"
+            alt="close search box"
+          />
+        </button>
+      </div>
+
+      <div class="search-btn" search-toggler menu-close>
+        <img
+          src="./assets/images/search.png"
+          width="24"
+          height="24"
+          alt="open search box"
+        />
+      </div>
+
+      <button class="menu-btn" menu-btn menu-toggler>
+        <img
+          src="./assets/images/menu.png"
+          width="24"
+          height="24"
+          alt="open menu"
+          class="menu"
+        />
+        <img
+          src="./assets/images/menu-close.png"
+          width="24"
+          height="24"
+          alt="close menu"
+          class="close"
+        />
+      </button>
+    </header>
+    <main>
+      <!-- #SIDEBAR -->
+      <nav class="sidebar" sidebar></nav>
+      <div class="overlay" overlay menu-toggler></div>
+
+      <article class="container" page-content2>
+        <form id="Add_film" >
+            <fieldset>
+              <legend id="film_legend">Film</legend>
+              <ol id="ol_label_nom">
+                <li>
+                  <label for=nom id="label_nom">Nom du film complet</label>
+                  <select id="selectElementId" onchange="addtitle(this.selectedIndex)"></select>
+                  <p id="error"></p>
+                  <input id=nom name=nom oninput="add_film(document.getElementById('nom').value)" type=text placeholder="Le Seigneur des anneaux : Les Deux Tours" required autofocus>
+                  <input type="hidden" id="title" name="title" value="" />
+                  <input type="hidden" id="vote_average" name="vote_average" value="" />
+                  <input type="hidden" id="release_date" name="release_date" value="" />
+                  <input type="hidden" id="poster_path" name="poster_path" value="" />
+                  <input type="hidden" id="popularity" name="popularity" value="" />
+                  <input type="hidden" id="overview" name="overview" value="" />
+                  <input type="hidden" id="genre_ids" name="genre_ids" value="" />
+                </li>
+                <li id="li_file">
+                    <input type="file" id="file" name="file" accept="video/*"/>
+                </li>
+              </ol>
+            </fieldset>
+          
+            <fieldset id="ajouter">
+              <button>Ajouter</button>
+            </fieldset>
+            <p id="add_film_good"></p>
+          </form>
+
+      </article>
+    </main>
+    <script>
+        document.getElementById("Add_film").addEventListener('submit',function(e){
+            e.preventDefault();
+            let add_film_good = document.getElementById('add_film_good');
+            add_film_good.innerHTML = "";
+            add_film_good.innerHTML = "En cours de téléchargement";
+            let error = document.getElementById('error');
+            if (error.innerText !== ""){
+                error.innerHTML = "";
+            }
+
+
+            if ((document.getElementById('title').value !== "") && (document.getElementById("file").files[0] !== undefined)){
+                const userfile = document.getElementById("file").files[0];
+                const usertitle = document.getElementById("nom").value;
+                const chunkSize = 1024*1024;
+                const type = document.getElementById('file').files[0].type;
+                const title = document.getElementById('title').value;
+                const vote_average = document.getElementById('vote_average').value;
+                const release_date = document.getElementById('release_date').value;
+                const poster_path = document.getElementById('poster_path').value;
+                const popularity = document.getElementById('popularity').value;
+                const overview = document.getElementById('overview').value;
+                const genre_ids = document.getElementById('genre_ids').value;
+
+                let i = 0;
+
+                for (let start = 0; start < userfile.size; start += chunkSize) {
+                    const chunk = userfile.slice(start, start + chunkSize);
+                    const formData = new FormData();
+                    formData.append("usertitle",usertitle);
+                    formData.append("chunk",i);
+                    formData.append("userfile",chunk);
+
+                    
+                    fetch(configURL+"api.php",{
+                    method: "POST",
+                    body: formData ,
+                    });
+                    i++;
+                };
+                const response = fetch(configURL+"api.php",{
+                    method: "POST",
+                    body: JSON.stringify({
+                        finish: true,
+                        type: type,
+                        title: title,
+                        vote_average: vote_average,
+                        release_date: release_date,
+                        poster_path: poster_path,
+                        popularity: popularity,
+                        overview: overview,
+                        genre_ids: genre_ids,
+                    }) ,
+
+                }).then(function (response) {
+                    add_film_good.innerHTML = "";
+                    add_film_good.innerHTML = "Téléchargement terminer";
+                    });
+                ;
+            }else{
+                if (document.getElementById('title').value === ""){
+                    error.innerHTML = "Pas de titre de film sélectionner";
+                }else{
+                    error.innerHTML = "Pas de fichier à télécharger";
+                }
+            }
+        })
+    </script>
+  </body>
+</html>
